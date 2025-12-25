@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Game Trắc Nghiệm Địa Lí Việt Nam</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f0f8ff;
+        padding: 20px;
+    }
+    .game-box {
+        max-width: 800px;
+        margin: auto;
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    h1 {
+        text-align: center;
+        color: #0066cc;
+    }
+    .question {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+    .answers button {
+        display: block;
+        width: 100%;
+        margin: 8px 0;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 6px;
+        border: none;
+        background: #e6f2ff;
+        cursor: pointer;
+    }
+    .answers button:hover {
+        background: #cce6ff;
+    }
+    .correct {
+        background: #90ee90 !important;
+    }
+    .wrong {
+        background: #ffb6b6 !important;
+    }
+    #nextBtn {
+        margin-top: 15px;
+        padding: 10px 20px;
+        font-size: 16px;
+        display: none;
+    }
+    .score {
+        font-size: 20px;
+        text-align: center;
+        color: #d2691e;
+    }
+</style>
+</head>
+
+<body>
+<div class="game-box">
+    <h1>🎯 Trắc nghiệm Địa lí Việt Nam</h1>
+    <div id="questionBox" class="question"></div>
+    <div id="answerBox" class="answers"></div>
+    <button id="nextBtn" onclick="nextQuestion()">Câu tiếp theo</button>
+    <div id="scoreBox" class="score"></div>
+</div>
+
+<script>
+const questions = [
+    {
+        q: "Địa hình nước ta chủ yếu là đồi núi, chiếm khoảng bao nhiêu phần diện tích đất liền?",
+        a: ["1/2", "2/3", "3/4", "4/5"],
+        correct: 2
+    },
+    {
+        q: "Khoáng sản than đá tập trung chủ yếu ở khu vực nào của Việt Nam?",
+        a: ["Tây Nguyên", "Tây Bắc", "Miền Trung", "Đông Bắc (Quảng Ninh)"],
+        correct: 3
+    },
+    {
+        q: "Khoáng sản dầu mỏ và khí tự nhiên tập trung chủ yếu ở đâu?",
+        a: ["Vùng núi phía Bắc", "Đồng bằng sông Cửu Long", "Thềm lục địa phía Nam", "Vùng núi Tây Nguyên"],
+        correct: 2
+    },
+    {
+        q: "Khoáng sản nào được dùng làm nguyên liệu sản xuất nhôm và tập trung chủ yếu ở Tây Nguyên?",
+        a: ["Than đá", "Bô-xít", "A-pa-tit", "Sắt"],
+        correct: 1
+    },
+    {
+        q: "Đặc điểm chung của khí hậu Việt Nam là:",
+        a: ["Khô và lạnh quanh năm", "Khô và nóng quanh năm", "Nhiệt đới ẩm gió mùa", "Ôn đới"],
+        correct: 2
+    },
+    {
+        q: "Miền Nam có khí hậu đặc trưng là:",
+        a: ["Có bốn mùa rõ rệt", "Mùa hè nóng, mùa đông lạnh", "Nóng quanh năm, có mùa mưa và mùa khô", "Mùa đông lạnh và khô"],
+        correct: 2
+    },
+    {
+        q: "Kiểu rừng nào chiếm tỉ lệ lớn nhất ở Việt Nam?",
+        a: ["Rừng tre nứa", "Rừng ngập mặn", "Rừng kín thường xanh", "Rừng núi đá"],
+        correct: 2
+    },
+    {
+        q: "Ở Việt Nam có hai loại đất chính là:",
+        a: ["Đất cát và đất sét", "Đất sét và đất phù sa", "Đất nâu đỏ và đất đen", "Đất phù sa và đất phe-ra-lít"],
+        correct: 3
+    },
+    {
+        q: "Biện pháp thuộc nhóm phòng, chống thiên tai là:",
+        a: ["Khai thác hợp lí tài nguyên", "Đẩy mạnh tái chế", "Đổi mới công nghệ khai thác", "Dự báo thông tin thời tiết kịp thời"],
+        correct: 3
+    },
+    {
+        q: "Đặc điểm lãnh thổ kéo dài theo chiều Bắc – Nam của Việt Nam dẫn đến:",
+        a: ["Khí hậu các vùng giống nhau", "Phân hóa khí hậu giữa các vùng", "Mùa đông kéo dài cả nước", "Không ảnh hưởng sản xuất"],
+        correct: 1
+    }
+];
+
+let index = 0;
+let score = 0;
+
+function showQuestion() {
+    const q = questions[index];
+    document.getElementById("questionBox").innerText = "Câu " + (index+1) + ": " + q.q;
+    const answerBox = document.getElementById("answerBox");
+    answerBox.innerHTML = "";
+
+    q.a.forEach((ans, i) => {
+        const btn = document.createElement("button");
+        btn.innerText = ans;
+        btn.onclick = () => checkAnswer(btn, i);
+        answerBox.appendChild(btn);
+    });
+}
+
+function checkAnswer(button, choice) {
+    const buttons = document.querySelectorAll(".answers button");
+    buttons.forEach(btn => btn.disabled = true);
+
+    if (choice === questions[index].correct) {
+        button.classList.add("correct");
+        score++;
+    } else {
+        button.classList.add("wrong");
+        buttons[questions[index].correct].classList.add("correct");
+    }
+    document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+    index++;
+    document.getElementById("nextBtn").style.display = "none";
+
+    if (index < questions.length) {
+        showQuestion();
+    } else {
+        document.getElementById("questionBox").innerText = "🎉 Hoàn thành!";
+        document.getElementById("answerBox").innerHTML = "";
+        document.getElementById("scoreBox").innerText =
+            "Bạn trả lời đúng " + score + "/" + questions.length + " câu.";
+    }
+}
+
+showQuestion();
+</script>
+</body>
+</html>
